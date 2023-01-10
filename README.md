@@ -8,9 +8,9 @@
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer
 - git in order to clone repos to deploy
 
-# Kubectl configuration 
+## Kubectl configuration 
 AWS CLI provides a way to dump out the connection details for an EKS cluster. This populates your $HOME/.kube/config file. This config file will be provided to each person, so nobody will actually need to login to AWS to manage thier cluster.
 
-# Note: When deploying your own k8 cluster, you only need this command.  
+### Note: When deploying your own k8 cluster, you only need this command.  
 aws eks update-kubeconfig --name=[CLUSTER_NAME]  
 
