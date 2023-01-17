@@ -1,4 +1,5 @@
 # eks-kappa-lab
+Maybe this excercise could be the unofficial manual for deploying Kappa. 
 
 ## prerequisites
 
@@ -131,38 +132,60 @@ You will see that it created a device and each of the agents has connected to it
 
 ## Let's talk about all the parts.
 
+
 namespace/kentik 
+
 This is a unique place that kappa live in inside kubernetes.
 
+
 serviceaccount/kubeinfo 
+
 This is the account that kappa uses to interact with kubernetes and gather infomration about kubernetes
 
+
 clusterrole.rbac.authorization.k8s.io/kubeinfo 
+
 This the role used by kubeinfo RBAC
 
+
 clusterrolebinding.rbac.authorization.k8s.io/kubeinfo
+
 role binding for kubeinfo
 
+
 configmap/kappa-bytecode-xxxx
+
 This is the eBPF bytecode that is used to collect stats. Used by kappa agent.
 
+
 configmap/kappa-config-xxxx 
+
 This is the configuration that is used by the agents in the daemonset (kappa agents)
+
 
 configmap/kappa-init-xxxx
 
+
 secret/kentik-api-secrets-xxxx
+
 These are the kentic credentials that are safely encrypted at rest
 
+
 service/kappa-agg 
+
 This is the service that makes sure kappa-agg keeps going.
 
+
 deployment.apps/kappa-agg
+
 This is the pod that takes all the data from all the nodes and aggregates it. 
+
 
 deployment.apps/kubeinfo 
 
+
 daemonset.apps/kappa-agent 
+
 This is the actual agent that resides on each node in the cluster. It uses both packets and ebpf to gather data
 
 
@@ -177,5 +200,18 @@ You may have noticed that there isnt much talk about removeing it. But sometime 
 kubectl apply -k .
 ```
 
+## adding a load balancer
 
+Sample deployment of a LB [here](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
+Use the files shown in the link above.
+eks-sample-deployment.yaml	
+eks-sample-service.yaml
 
+```
+kubectl expose deployment hello-world --type=LoadBalancer --name=my-service
+```
+
+you can check what that looks like here:
+```
+kubectl -n eks-sample-app describe service eks-sample-linux-service
+```
