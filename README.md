@@ -5,6 +5,7 @@ Maybe this excercise could be the unofficial manual for deploying Kappa. This ex
 
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer. This Allows you to communicate with your cluster via commandline.
+- awscli 
 - Git in order to clone repos to deploy into your cluster
 - Basic understanding of Kubernetes terms e.g. Containers, Pods, namespaces, deployments, daemonsets etc.. 
 - Spoof access or an account to log into kentikaz23 in  US prod (contact Ted or Mike K if you do not have one of these)
@@ -76,8 +77,12 @@ git clone https://github.com/kentik/kappa-cfg
 2. Login to the provided Kentik Portal and make note of the plan-id, your kentik email and token.
 
 3. CD into the kappa-cfg directory and use your favorite editor to open up the Kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
+```
+cd kappa-cfg
+```
 
-One is the know as a "configmap". This helps to define what interfaces we are looking at for traffic. 
+
+One section is the "configmap". This helps to define what interfaces we are looking at for traffic. 
 ```
 configMapGenerator:
   - name: kappa-config
@@ -88,6 +93,20 @@ configMapGenerator:
       - plan=1234
       - bytecode=x86_64/kappa_bpf-ubuntu-5.4.o
  ```
+ 
+ The resuting section will look like this:
+ ```
+configMapGenerator:
+  - name: kappa-config
+    literals:
+      - capture=ens3|veth.*|eth*
+      - device=my_device_name
+      - region=US
+      - plan=1234
+      - bytecode=x86_64/kappa_bpf-ubuntu-5.4.o
+ ```
+ 
+ 
 **** Note that you can configure a list of interface names. This is important and depends on the OS used. If you are unsure you can ask your AWS administrator. In mine, I had to add eth* to the list. We will talk about bytecode in a bit.
 
 
