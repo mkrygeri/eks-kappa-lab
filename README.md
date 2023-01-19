@@ -73,7 +73,7 @@ Once we are confident that we can communicate with our assigned clusters, we can
 ```
 git clone https://github.com/kentik/kappa-cfg
 ```
-2. Login to the provided Kentik Portal and make note of the device name and plan-id, your kentik email and token.
+2. Login to the provided Kentik Portal and make note of the plan-id, your kentik email and token.
 
 3. CD into the kappa-cfg directory and use your favorite editor to open up the Kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
 
