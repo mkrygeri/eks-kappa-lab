@@ -5,8 +5,9 @@ Maybe this excercise could be the unofficial manual for deploying Kappa. This ex
 
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer. This Allows you to communicate with your cluster via commandline.
-- awscli 
+- [awscli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
 - Git in order to clone repos to deploy into your cluster
+- (mac) homebrew
 - Basic understanding of Kubernetes terms e.g. Containers, Pods, namespaces, deployments, daemonsets etc.. 
 - Spoof access or an account to log into kentikaz23 in  US prod (contact Ted or Mike K if you do not have one of these)
 - You should have a config file that was emailed to you. This will allow you to access your cluster.
@@ -209,16 +210,16 @@ role binding for kubeinfo
 This is the eBPF bytecode that is used to collect stats. Used by kappa agent.
 
 
-##configmap/kappa-config-xxxx 
+## configmap/kappa-config-xxxx 
 
 This is the configuration that is used by the agents in the daemonset (kappa agents)
 
 
-##configmap/kappa-init-xxxx
+## configmap/kappa-init-xxxx
 
 This is mostly to bootstrap eBPF bytecode when starting up
 
-##secret/kentik-api-secrets-xxxx
+## secret/kentik-api-secrets-xxxx
 
 These are the Kentik credentials that are safely encrypted at rest. 
 
@@ -227,7 +228,7 @@ These are the Kentik credentials that are safely encrypted at rest.
 
 This is the service that makes sure kappa-agg keeps going.
 
-##deployment.apps/kappa-agg
+## deployment.apps/kappa-agg
 
 This is the pod that takes all the data from all the nodes and aggregates it. 
 
@@ -235,7 +236,7 @@ This is the pod that takes all the data from all the nodes and aggregates it.
 ### deployment.apps/kubeinfo 
 
 
-##daemonset.apps/kappa-agent 
+## daemonset.apps/kappa-agent 
 
 This is the actual agent that resides on each node in the cluster. It uses both packets and ebpf to gather data
 
@@ -247,6 +248,8 @@ eBPF is functionality introduced in the linux kernel that allows you to hook ont
 Kappa can generate data based on eBPF both with or with out bytecode. But sometimes you might need to load bytecode to support the correct kernel version. 
 eBPF has been develpoed rapidly and some features have changed from kernel to kernel. We counter this by building bytecode for common kernels. 
 It is possible to do this yourself if you know how to compile them. Unfortunately we do not provide source to customers.
+
+As of right now, we have not installed bytecode. But we can do this by going to the bytecode instructions.
 
 
 ## Removing Kappa. 
