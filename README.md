@@ -147,9 +147,25 @@ daemonset.apps/kappa-agent create
 ```
 
 5. Let's Verify things worked. One simple way is to look in the portal to see that the device is now on your list of devices. Or we can verify it is working by looking at pod logs. 
+Another way might be to make sure all your pods are running. You can list all pods running in the kentik namespace with the following command:
+```
+kubectl get pods -nkentik 
+```
+If healthy, you will see something like this:
+```
+NAME                         READY   STATUS    RESTARTS   AGE
+kappa-agent-5mcvb            1/1     Running   0          118s
+kappa-agent-bvqb6            1/1     Running   0          118s
+kappa-agent-vbwbf            1/1     Running   0          118s
+kappa-agg-55f4bfd9f9-chjvj   1/1     Running   0          118s
+kubeinfo-7d676c5444-7jh7s    1/1     Running   0          118s
+```
+
 Use kubectl to find the pod with "kappa-agg" in the name. Does anything look off when you list the pods?
 
+```
 k logs kappa-agg-xxxx-xxxx
+```
 
 You will see that it created a device and each of the agents has connected to it.
 
@@ -238,22 +254,4 @@ You may have noticed that there isnt much talk about removing it. But sometimes 
 ```
 kubectl delete -k .
 ```
-
-## Adding a simple app + a load balancer
-
-Sample deployment of a LB [here](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
-Use the files shown in the link above.
-eks-sample-deployment.yaml	
-eks-sample-service.yaml
-
-```
-kubectl expose deployment eks-sample-deployment --type=LoadBalancer --name=eks-sample-linux-service
-```
-
-you can check what that looks like here:
-```
-kubectl -n eks-sample-app describe service eks-sample-linux-service
-```
-
-The nice thing about this is that it configures an aws LB endpoint that can be used to access this without needing to configure it through the AWS API.
 
