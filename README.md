@@ -1,14 +1,29 @@
 # eks-kappa-lab
-Maybe this excercise could be the unofficial manual for deploying Kappa. 
+Maybe this excercise could be the unofficial manual for deploying Kappa. This example is used for EKS, but would fit with any K8 implementation if you are aware of some of the things to look for while deploying. 
 
 ## prerequisites
+
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer. This Allows you to communicate with your cluster via commandline.
 - Git in order to clone repos to deploy into your cluster
 - Basic understanding of Kubernetes terms e.g. Containers, Pods, namespaces, deployments, daemonsets etc.. 
+- Spoof access or an account to log into kentikaz23 in  US prod (contact Ted or Mike K if you do not have one of these)
+- You should have a config file that was emailed to you. This wil allow you to access yur cluster.
+
+what you DON'T need:
+- Access to the AWS infra
+- To be a Kubernetes expert
+
 
 ## Goal of this session
-The goal here is to emulate what someone might do if they own a Kubernetes environement but don't have access to the underlying infrastructure. This means you will not need to login to the AWS console or connect to any nodes via ssh.
+The goal here is to emulate what someone might do if they own a Kubernetes environement but don't have access to the underlying infrastructure, but has rights to deploy on a cluster. This means you will not need to login to the AWS console or connect to any nodes via ssh.
+
+## Installing your k8 creds
+If you already have a config for another cluster, you can use multiple contexts to manage this. Please see [this](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) if you need to do this.
+```
+mkdir $HOME/.kube 
+cp ./config $HOME/.kube/
+```
 
 ## Kubectl configuration (self-paced lab)
 AWS CLI provides a way to dump out the connection details for an EKS cluster. This populates your $HOME/.kube/config file. This config file will be provided to each person, so nobody will actually need to login to AWS to manage thier cluster.
@@ -26,10 +41,9 @@ aws eks update-kubeconfig --name=[CLUSTER_NAME]
 ```
 
 ###  Hashicorp k8 learning lab
-This excercise is based on the lab found [here](https://github.com/hashicorp/learn-terraform-provision-eks-cluster/blob/main/eks-cluster.tf). 
-The Kentik terraform was taken from Kentik's portal configuration, but the module can be found [here](https://github.com/kentik/config-snippets-cloud/tree/master/cloud_AWS).  
+This excercise is based partly on the lab found [here](https://github.com/hashicorp/learn-terraform-provision-eks-cluster/blob/main/eks-cluster.tf). 
+The Kentik terraform was taken from Kentik's portal configuration, but the module can be found [here](https://github.com/kentik/config-snippets-cloud/tree/master/cloud_AWS). I used the terraform code generated in the portal and combined it with Hashicorp's
 
-a configuration file has been provided for each user to connect to thier own cluster. Place this file in the ~/.kube/ directory.
 
 
 ## Testing your configuration
@@ -59,7 +73,7 @@ Once we are confident that we can communicate with our assigned clusters, we can
 ```
 git clone https://github.com/kentik/kappa-cfg
 ```
-2. Login to the provided Kentik Portal and add a device name it something with your name so we know who belongs to each device. Set the device type to "Process-aware Telemetry agent". Make note of the device name and plan-id. 
+2. Login to the provided Kentik Portal and make note of the device name and plan-id, your kentik email and token.
 
 3. CD into the kappa-cfg directory and use your favorite editor to open up the Kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
 
@@ -74,7 +88,7 @@ configMapGenerator:
       - plan=1234
       - bytecode=x86_64/kappa_bpf-ubuntu-5.4.o
  ```
-**** Note that you can configure a list of interface names. This is important and depends on the OS used. If you are unsure you can ask your AWS administrator. In mine, I had to add eth* to the list.
+**** Note that you can configure a list of interface names. This is important and depends on the OS used. If you are unsure you can ask your AWS administrator. In mine, I had to add eth* to the list. We will talk about bytecode in a bit.
 
 
 Second is the kentik credentials used. You can use credentials shown in the kproxy config if you want to be sure no other users will change the token. Alternatively, create your own user account in this portal.  
@@ -132,75 +146,80 @@ You will see that it created a device and each of the agents has connected to it
 
 ## Let's talk about all the parts.
 
+Kappa has a few moving parts
 
-namespace/kentik 
+## namespace/kentik 
 
 This is a unique place that kappa live in inside kubernetes.
 
 
-serviceaccount/kubeinfo 
+## serviceaccount/kubeinfo 
 
 This is the account that kappa uses to interact with kubernetes and gather infomration about kubernetes
 
 
-clusterrole.rbac.authorization.k8s.io/kubeinfo 
+## clusterrole.rbac.authorization.k8s.io/kubeinfo 
 
 This the role used by kubeinfo RBAC
 
 
-clusterrolebinding.rbac.authorization.k8s.io/kubeinfo
+## clusterrolebinding.rbac.authorization.k8s.io/kubeinfo
 
 role binding for kubeinfo
 
 
-configmap/kappa-bytecode-xxxx
+## configmap/kappa-bytecode-xxxx
 
 This is the eBPF bytecode that is used to collect stats. Used by kappa agent.
 
 
-configmap/kappa-config-xxxx 
+##configmap/kappa-config-xxxx 
 
 This is the configuration that is used by the agents in the daemonset (kappa agents)
 
 
-configmap/kappa-init-xxxx
+##configmap/kappa-init-xxxx
+
+This is mostly to bootstrap eBPF bytecode when starting up
+
+##secret/kentik-api-secrets-xxxx
+
+These are the Kentik credentials that are safely encrypted at rest. 
 
 
-secret/kentik-api-secrets-xxxx
-
-These are the kentic credentials that are safely encrypted at rest
-
-
-service/kappa-agg 
+##service/kappa-agg 
 
 This is the service that makes sure kappa-agg keeps going.
 
-
-deployment.apps/kappa-agg
+##deployment.apps/kappa-agg
 
 This is the pod that takes all the data from all the nodes and aggregates it. 
 
 
-deployment.apps/kubeinfo 
+### deployment.apps/kubeinfo 
 
 
-daemonset.apps/kappa-agent 
+##daemonset.apps/kappa-agent 
 
 This is the actual agent that resides on each node in the cluster. It uses both packets and ebpf to gather data
 
 
 
 ## About eBPF
+eBPF is functionality introduced in the linux kernel that allows you to hook onto any event in the Linux Kernel. It also does a ton of other cool stuff that I won't get into here.
 
+Kappa can generate data based on eBPF both with or with out bytecode. But sometimes you might need to load bytecode to support the correct kernel version. 
+eBPF has been develpoed rapidly and some features have changed from kernel to kernel. We counter this by building bytecode for common kernels. 
+It is possible to do this yourself if you know how to compile them. Unfortunately we do not provide source to customers.
 
 
 ## Removing Kappa. 
 You may have noticed that there isnt much talk about removeing it. But sometime you want to start over. Fortunately this is simeple. From your kappa-cfg diretory, simply run the following:
 ```
-kubectl apply -k .
+kubectl delete -k .
 ```
 
-## adding a load balancer
+## Adding a simple app + a load balancer
 
 Sample deployment of a LB [here](https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html)
 Use the files shown in the link above.
@@ -208,10 +227,13 @@ eks-sample-deployment.yaml
 eks-sample-service.yaml
 
 ```
-kubectl expose deployment hello-world --type=LoadBalancer --name=my-service
+kubectl expose deployment eks-sample-deployment --type=LoadBalancer --name=eks-sample-linux-service
 ```
 
 you can check what that looks like here:
 ```
 kubectl -n eks-sample-app describe service eks-sample-linux-service
 ```
+
+The nice thing about thsd is that it configures an aws LB endpoint that can be used to access this without needing to configure it through the AWS API.
+
