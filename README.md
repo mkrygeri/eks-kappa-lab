@@ -76,13 +76,14 @@ git clone https://github.com/kentik/kappa-cfg
 ```
 2. Login to the provided Kentik Portal and make note of the plan-id, your kentik email and token.
 
-3. CD into the kappa-cfg directory and use your favorite editor to open up the Kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
+3. CD into the kappa-cfg directory and use your favorite editor to open up the kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
 ```
 cd kappa-cfg
+nano kustomization
 ```
 
 
-One section is the "configmap". This helps to define what interfaces we are looking at for traffic. 
+One section is the "configmap". This helps to define what interfaces we are looking at for traffic.  Plus the plan number (from the Licensing page in the Portal) and finally give the device a unique name (i.e. yourname-kappa_test) 
 ```
 configMapGenerator:
   - name: kappa-config
@@ -102,7 +103,7 @@ configMapGenerator:
       - capture=ens3|veth.*|eth*
       - device=my_device_name
       - region=US
-      - plan=1234
+      - plan=45255
       - bytecode=x86_64/kappa_bpf-ubuntu-5.4.o
  ```
  
