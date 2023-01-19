@@ -8,7 +8,7 @@ Maybe this excercise could be the unofficial manual for deploying Kappa. This ex
 - Git in order to clone repos to deploy into your cluster
 - Basic understanding of Kubernetes terms e.g. Containers, Pods, namespaces, deployments, daemonsets etc.. 
 - Spoof access or an account to log into kentikaz23 in  US prod (contact Ted or Mike K if you do not have one of these)
-- You should have a config file that was emailed to you. This wil allow you to access yur cluster.
+- You should have a config file that was emailed to you. This will allow you to access your cluster.
 
 what you DON'T need:
 - Access to the AWS infra
