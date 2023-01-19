@@ -233,7 +233,7 @@ It is possible to do this yourself if you know how to compile them. Unfortunatel
 
 
 ## Removing Kappa. 
-You may have noticed that there isnt much talk about removeing it. But sometime you want to start over. Fortunately this is simeple. From your kappa-cfg diretory, simply run the following:
+You may have noticed that there isnt much talk about removing it. But sometimes you want to start over. Fortunately this is simple. From your kappa-cfg diretory, simply run the following:
 ```
 kubectl delete -k .
 ```
@@ -254,5 +254,5 @@ you can check what that looks like here:
 kubectl -n eks-sample-app describe service eks-sample-linux-service
 ```
 
-The nice thing about thsd is that it configures an aws LB endpoint that can be used to access this without needing to configure it through the AWS API.
+The nice thing about this is that it configures an aws LB endpoint that can be used to access this without needing to configure it through the AWS API.
 
