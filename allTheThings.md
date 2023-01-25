@@ -9,9 +9,8 @@
 
 ## important!! You must have AWS CLI configured as well as a working terraform!!!
 
-## Configure AWS CLI with provided credentials run the following command and put in us-east-2 as the region
-```
-aws configure
+
+
 ```
 git clone [eks-kappa-lab](https://github.com/mkrygeri/eks-kappa-lab)
 ```
