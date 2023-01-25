@@ -1,10 +1,10 @@
 # eks-kappa-lab
-Maybe this excercise could be the unofficial manual for deploying Kappa. This example is used for EKS, but would fit with any K8 implementation if you are aware of some of the things to look for while deploying. 
+Maybe this exercise could be the unofficial manual for deploying Kappa. This example is used for EKS, but would fit with any K8 implementation if you are aware of some of the things to look for while deploying. 
 
 ## prerequisites
 
 What you need:
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer. This Allows you to communicate with your cluster via commandline.
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) v1.24.0 or newer. This Allows you to communicate with your cluster via command line.
 - [awscli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
 - Git in order to clone repos to deploy into your cluster
 - (mac) homebrew
@@ -13,13 +13,13 @@ What you need:
 - You should have some config files that were emailed to you. This will allow you to access your cluster and deploy software on it.
 
 what you DON'T need:
-- To be a Kubernetes expert because they dont exist
+- To be a Kubernetes expert because they don't exist
 
 
 
 
 ## Goal of this session
-The goal here is to emulate what someone might do if they own a Kubernetes environement but don't have access to the underlying infrastructure, but has rights to deploy on a cluster. This means you will not need to login to the AWS console or connect to any nodes via ssh.
+The goal here is to emulate what someone might do if they own a Kubernetes environment but don't have access to the underlying infrastructure, but has rights to deploy on a cluster. This means you will not need to login to the AWS console or connect to any nodes via ssh.
 
 
 ## Configure AWS CLI with provided credentials run the following command and put in us-east-2 as the region
@@ -27,7 +27,7 @@ The goal here is to emulate what someone might do if they own a Kubernetes envir
 aws configure
 ```
 
-## Installing your k8 creds
+## Installing your k8 credentials
 If you already have a config for another cluster, you can use multiple contexts to manage this. Please see [this](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) if you need to do this.
 
 You can automatically install kubectl creds with AWS CLI (if you are using aws cli profiles you can specify --profile=[profilename]
@@ -58,13 +58,13 @@ This will give you a listing of all the running pods in all Namespaces.
 
 Once we are confident that we can communicate with our assigned clusters, we can move onto deploying Kappa to Kube.
 
-1. Go to your commandline and clone the Master Kentik Kappa repository.
+1. Go to your command line and clone the Master Kentik Kappa repository.
 ```
 git clone https://github.com/kentik/kappa-cfg
 ```
 2. Login to the provided Kentik Portal and make note of the plan-id, your kentik email and token.
 
-3. CD into the kappa-cfg directory and use your favorite editor to open up the kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be nodified for now.
+3. CD into the kappa-cfg directory and use your favorite editor to open up the kustomization file. This is the file that you need to edit in order to point the output to Kentik. There are 2 sections that need to be modified for now.
 ```
 cd kappa-cfg
 nano kustomization
@@ -83,7 +83,7 @@ configMapGenerator:
       - bytecode=x86_64/kappa_bpf-ubuntu-5.4.o
  ```
  
- The resuting section will look like this:
+ The resulting section will look like this:
  ```
 configMapGenerator:
   - name: kappa-config
@@ -134,10 +134,10 @@ deployment.apps/kubeinfo created
 daemonset.apps/kappa-agent create
 ```
 
-5. Let's Verify things worked. One simple way is to look in the portal to see that the device is now on your list of devices. Or we can verify it is working by looking at pod logs. 
+5. Let's verify things worked. One simple way is to look in the portal to see that the device is now on your list of devices. Or we can verify it is working by looking at pod logs. 
 Another way might be to make sure all your pods are running. You can list all pods running in the kentik namespace with the following command:
 ```
-kubectl get pods -nkentik 
+kubectl get pods -n kentik 
 ```
 If healthy, you will see something like this:
 ```
@@ -151,8 +151,10 @@ kubeinfo-7d676c5444-7jh7s    1/1     Running   0          118s
 
 Use kubectl to find the pod with "kappa-agg" in the name. Does anything look off when you list the pods?
 
+Then view the logs for this pod:
+
 ```
-k logs kappa-agg-xxxx-xxxx
+kubectl logs -name kentik kappa-agg-xxxx-xxxx
 ```
 
 You will see that it created a device and each of the agents has connected to it.
@@ -244,4 +246,3 @@ You may have noticed that there isnt much talk about removing it. But sometimes 
 ```
 kubectl delete -k .
 ```
-
