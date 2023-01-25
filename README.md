@@ -32,7 +32,7 @@ If you already have a config for another cluster, you can use multiple contexts 
 
 You can automatically install kubectl creds with AWS CLI (if you are using aws cli profiles you can specify --profile=[profilename]
 ```
-aws eks update-kubeconfig
+aws eks update-kubeconfig --name=[clustername]
 ```
 
 ## Testing your configuration
