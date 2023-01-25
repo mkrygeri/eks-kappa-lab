@@ -13,20 +13,27 @@ What you need:
 - You should have some config files that were emailed to you. This will allow you to access your cluster and deploy software on it.
 
 what you DON'T need:
-- Access to the AWS infra
-- To be a Kubernetes expert
+- To be a Kubernetes expert because they dont exist
+
+
 
 
 ## Goal of this session
 The goal here is to emulate what someone might do if they own a Kubernetes environement but don't have access to the underlying infrastructure, but has rights to deploy on a cluster. This means you will not need to login to the AWS console or connect to any nodes via ssh.
 
-## Installing your k8 creds
-If you already have a config for another cluster, you can use multiple contexts to manage this. Please see [this](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) if you need to do this.
+
+## Configure AWS CLI with provided credentials run the following command and put in us-east-2 as the region
 ```
-mkdir $HOME/.kube 
-cp ./config $HOME/.kube/
+aws configure
 ```
 
+## Installing your k8 creds
+If you already have a config for another cluster, you can use multiple contexts to manage this. Please see [this](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/) if you need to do this.
+
+You can automatically install kubectl creds with AWS CLI (if you are using aws cli profiles you can specify --profile=[profilename]
+```
+aws eks update-kubeconfig
+```
 
 ## Testing your configuration
 You can do a basic test of the configuratipn by running the following command:
